@@ -1,0 +1,13 @@
+configfile: "config/config.yaml"
+
+
+include: "rules/prepare_data.smk"
+
+
+rule all:
+    input:
+        expand(
+            config["results_dir"] + "data/{threshold}/distances/{mode}.parquet",
+            threshold=config["thresholds"],
+            mode=["all", "test"],
+        ),

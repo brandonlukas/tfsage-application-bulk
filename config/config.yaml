@@ -1,0 +1,4 @@
+results_dir: "results/"
+chip_metadata: "resources/metadata.csv"
+thresholds: ["05", "10", "20"]
+target_factors: ["JUN", "MED12"]
