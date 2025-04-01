@@ -1,4 +1,3 @@
-import re
 import pandas as pd
 from tfsage.embedding import generate_embeddings
 from snakemake.script import snakemake

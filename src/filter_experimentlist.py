@@ -1,4 +1,3 @@
-import pandas as pd
 import dask.dataframe as dd
 
 # (Download) and table schema
