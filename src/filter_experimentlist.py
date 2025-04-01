@@ -22,9 +22,10 @@ ddf = ddf[ddf[2].isin(["TFs and others", "Histone", "ATAC-Seq"])]
 ddf = ddf[(ddf[2] != "Histone") | (ddf[3] == "H3K27ac")]
 df = ddf.compute()
 
-# Define the conditions
+# Download relevant H3K27ac and ATAC-seq experiments for leiomyoma/myometrium
 condition1 = ((df[2] == "Histone") | (df[2] == "ATAC-Seq")) & (df[4] == "Uterus")
 
+# Download a few relevant factors for leiomyoma/myometrium
 factor_list = ["MED12", "FOS", "JUN", "CDK8", "PGR", "ESR1"]
 condition2 = (df[2] == "TFs and others") & (df[3].isin(factor_list))
 
