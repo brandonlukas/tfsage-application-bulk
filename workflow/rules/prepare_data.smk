@@ -52,7 +52,7 @@ rule embeddings:
         config["results_dir"] + "data/{threshold}/embeddings/{mode}.parquet",
     params:
         align_key="TrackClass",
-        target_factors=config["target_factors"],
+        holdout_factors=config["holdout_factors"],
     script:
         "../scripts/prepare_data/embeddings.py"
 

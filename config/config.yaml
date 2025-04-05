@@ -1,4 +1,10 @@
 results_dir: "results/"
 chip_metadata: "resources/metadata.csv"
+factor_list: "resources/factor_list.txt"
+query_set: "resources/query_set.txt"
+
 thresholds: ["05", "10", "20"]
-target_factors: ["JUN", "MED12"]
+holdout_factors: ["JUN", "MED12"]
+tfsage_n: [15]
+motif_dbs:
+  - CIS-BP

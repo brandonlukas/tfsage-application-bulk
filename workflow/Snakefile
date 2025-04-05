@@ -2,6 +2,15 @@ configfile: "config/config.yaml"
 
 
 include: "rules/prepare_data.smk"
+include: "rules/generate.smk"
+include: "rules/motif_scan.smk"
+
+
+with open(config["factor_list"]) as f:
+    factor_list = [line.strip() for line in f.readlines()]
+
+with open(config["query_set"]) as f:
+    query_set = [line.strip() for line in f.readlines()]
 
 
 rule all:
@@ -9,5 +18,20 @@ rule all:
         expand(
             config["results_dir"] + "data/{threshold}/distances/{mode}.parquet",
             threshold=config["thresholds"],
-            mode=["all", "test"],
+            mode=["all", "exclude_holdout"],
+        ),
+        expand(
+            config["results_dir"]
+            + "generate/{threshold}/tfsage_experiments/head_{n}/{query_id}_{factor}.parquet",
+            threshold=config["thresholds"],
+            n=config["tfsage_n"],
+            query_id=query_set,
+            factor=factor_list,
+        ),
+        expand(
+            config["results_dir"]
+            + "motif_scan/{threshold}/{motif_db}/{experiment}.bed",
+            threshold=config["thresholds"],
+            motif_db=config["motif_dbs"],
+            experiment=query_set,
         ),

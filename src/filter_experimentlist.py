@@ -25,7 +25,9 @@ df = ddf.compute()
 condition1 = ((df[2] == "Histone") | (df[2] == "ATAC-Seq")) & (df[4] == "Uterus")
 
 # Download a few relevant factors for leiomyoma/myometrium
-factor_list = ["MED12", "FOS", "JUN", "CDK8", "PGR", "ESR1"]
+with open("resources/factor_list.txt") as f:
+    factor_list = [line.strip() for line in f.readlines()]
+
 condition2 = (df[2] == "TFs and others") & (df[3].isin(factor_list))
 
 # Combine them
