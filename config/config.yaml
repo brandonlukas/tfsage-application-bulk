@@ -7,4 +7,5 @@ thresholds: ["05", "10", "20"]
 holdout_factors: ["JUN", "MED12"]
 tfsage_n: [15]
 motif_dbs:
+  - HOCOMOCOv11_HUMAN
   - CIS-BP
