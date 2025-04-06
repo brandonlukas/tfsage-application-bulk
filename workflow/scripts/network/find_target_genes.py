@@ -40,10 +40,13 @@ def find_target_genes(
             score_threshold = predictions["score"].quantile(score_threshold_q)
 
         df_predictions = predictions.query("score >= @score_threshold")
-        df = closest_features(df_predictions, features_bed)
-        df = df.query("-@upstream < distance < @downstream")
-        df["gene"] = df["name"].str.split(":").str[1]
-        target_genes = df["gene"].dropna().unique().tolist()
+        if df_predictions.empty:
+            target_genes = []
+        else:
+            df = closest_features(df_predictions, features_bed)
+            df = df.query("-@upstream < distance < @downstream")
+            df["gene"] = df["name"].str.split(":").str[1]
+            target_genes = df["gene"].dropna().unique().tolist()
     else:
         target_genes = []
 
