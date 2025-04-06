@@ -2,6 +2,7 @@ results_dir: "results/"
 chip_metadata: "resources/metadata.csv"
 factor_list: "resources/factor_list.txt"
 query_set: "resources/query_set.txt"
+benchmark_set: "resources/benchmark_set.csv"
 
 thresholds: ["05", "10", "20"]
 holdout_factors: ["JUN", "MED12"]
@@ -9,3 +10,18 @@ tfsage_n: [15]
 motif_dbs:
   - HOCOMOCOv11_HUMAN
   - CIS-BP
+
+test_sets:
+  balanced:
+    peak_width: 200
+    exclude_chroms: ["chrM", "chrY"]
+    n_samples: 1000 # 500 positive, 500 negative
+    p_positive: 0.5 # balanced
+    random_state: 42
+
+  severe:
+    peak_width: 200
+    exclude_chroms: ["chrM", "chrY"]
+    n_samples: 10000 # 500 positive, 9500 negative
+    p_positive: 0.05 # severely imbalanced
+    random_state: 42

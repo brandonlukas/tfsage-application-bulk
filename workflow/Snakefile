@@ -35,3 +35,4 @@ rule all:
             motif_db=config["motif_dbs"],
             experiment=query_set,
         ),
+        config["results_dir"] + "generate/benchmark_metrics.csv",
