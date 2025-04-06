@@ -5,7 +5,7 @@ query_set: "resources/query_set.txt"
 benchmark_set: "resources/benchmark_set.csv"
 
 thresholds: ["05", "10", "20"]
-holdout_factors: ["JUN", "MED12"]
+holdout_factors: ["FOS", "JUN", "MED12", "CDK8"]
 tfsage_n: [15]
 motif_dbs:
   - HOCOMOCOv11_HUMAN
