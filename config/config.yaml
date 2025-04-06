@@ -25,3 +25,9 @@ test_sets:
     n_samples: 10000 # 500 positive, 9500 negative
     p_positive: 0.05 # severely imbalanced
     random_state: 42
+
+network:
+  upstream: 1000
+  downstream: 100
+  score_threshold_q: 0.85
+  
