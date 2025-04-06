@@ -103,6 +103,6 @@ rule aggregate_metrics_generate:
             factor=benchmark_df["TrackType_target"],
         ),
     output:
-        config["results_dir"] + "generate/exclude_holdout/metrics.csv",
+        config["results_dir"] + "generate/exclude_holdout/benchmark_metrics.csv",
     script:
         "../scripts/generate/aggregate_metrics.py"

@@ -23,4 +23,4 @@ rule all:
             query_id=query_set,
             factor=factor_list,
         ),
-        config["results_dir"] + "generate/exclude_holdout/metrics.csv",
+        config["results_dir"] + "generate/exclude_holdout/benchmark_metrics.csv",
