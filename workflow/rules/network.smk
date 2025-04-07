@@ -2,7 +2,7 @@ rule compute_rp_tfsage:
     input:
         predictions=config["results_dir"]
         + "generate/{threshold}/tfsage_experiments/head_{n}/{query_id}_{factor}.parquet",
-        # query_file=config["results_dir"] + "downloads/{threshold}/{query_id}.bed",
+        query_file=config["results_dir"] + "downloads/{threshold}/{query_id}.bed",
     output:
         config["results_dir"]
         + "network/{threshold}/target_genes/tfsage/head_{n}/{query_id}_{factor}.json",

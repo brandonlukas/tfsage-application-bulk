@@ -17,6 +17,7 @@ def aggregate_activities(input_files, output_file):
         meta = {
             "method_class": data.get("method_class"),
             "method_name": data.get("method_name"),
+            "query_id": data.get("query_id"),
             "threshold": data.get("threshold"),
         }
 

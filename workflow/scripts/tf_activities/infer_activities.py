@@ -21,7 +21,7 @@ def infer_activities(input_expression, input_network, output_file, params, wildc
     )
 
     try:
-        acts, *_ = dc.run_consensus(mat, net)
+        acts, *_ = dc.run_aucell(mat, net)
     except ValueError:
         acts = None
 

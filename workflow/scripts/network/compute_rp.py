@@ -3,6 +3,7 @@ import dask.dataframe as dd
 import json
 import pybedtools
 from tfsage.features import load_region_set, extract_features
+from tfsage.utils import load_features_bed, closest_features
 from snakemake.script import snakemake
 
 
@@ -30,6 +31,7 @@ def compute_rp(
     method_name = params.get("method_name", None)
 
     gene_loc_set = load_region_set(genome)
+    features_bed = load_features_bed(genome)
     predictions = load_predictions(input_file, method_class, factor, m2f_path)
 
     if predictions is not None:
@@ -40,16 +42,8 @@ def compute_rp(
         if df_predictions.empty:
             target_genes = {}
         else:
-            bed_file = pybedtools.BedTool.from_dataframe(df_predictions)
-            if query_file is not None:
-                # Intersect with query file before extracting features
-                query_bed = pybedtools.BedTool(query_file)
-                bed_file = bed_file.intersect(query_bed, u=True)
-
-            df = extract_features(bed_file.fn, gene_loc_set).to_frame()
-            df["gene"] = df.index.str.split(":").str[1]
-            df = df.groupby("gene").mean()
-            target_genes = df.to_dict()[0]
+            # target_genes = rp_target_genes(df_predictions, query_file, gene_loc_set)
+            target_genes = binary_target_genes(df_predictions, query_file, features_bed)
     else:
         target_genes = {}
 
@@ -101,6 +95,34 @@ def load_predictions_motif_scan(
     predictions = ddf.compute()
     predictions.columns = ["chrom", "start", "end", "motif", "score", "strand"]
     return predictions
+
+
+def rp_target_genes(df_predictions, query_file, gene_loc_set):
+    bed_file = pybedtools.BedTool.from_dataframe(df_predictions)
+    if query_file is not None:
+        # Intersect with query file before extracting features
+        query_bed = pybedtools.BedTool(query_file)
+        bed_file = bed_file.intersect(query_bed, u=True).sort()
+
+    df = extract_features(bed_file.fn, gene_loc_set).to_frame()
+    df["gene"] = df.index.str.split(":").str[1]
+    df = df.groupby("gene").mean()
+    target_genes = df.to_dict()[0]
+    return target_genes
+
+
+def binary_target_genes(df_predictions, query_file, features_bed):
+    bed_file = pybedtools.BedTool.from_dataframe(df_predictions).sort()
+    if query_file is not None:
+        # Intersect with query file before extracting features
+        query_bed = pybedtools.BedTool(query_file)
+        bed_file = bed_file.intersect(query_bed, u=True)
+
+    df = closest_features(bed_file, features_bed)
+    df = df.query("-1000 < distance < 100")
+    df["gene"] = df["name"].str.split(":").str[1]
+    target_genes = {gene: 1.0 for gene in df["gene"].unique()}
+    return target_genes
 
 
 compute_rp(
