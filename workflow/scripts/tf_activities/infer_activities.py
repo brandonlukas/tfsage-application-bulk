@@ -7,6 +7,7 @@ from snakemake.script import snakemake
 def infer_activities(input_expression, input_network, output_file, params, wildcards):
     method_class = params.get("method_class", None)
     method_name = params.get("method_name", None)
+    query_id = wildcards.get("query_id", None)
     threshold = wildcards.get("threshold", None)
 
     net = load_network(input_network, method_name, params)
@@ -20,7 +21,7 @@ def infer_activities(input_expression, input_network, output_file, params, wildc
     )
 
     try:
-        acts, *_ = dc.run_ulm(mat, net)
+        acts, *_ = dc.run_consensus(mat, net)
     except ValueError:
         acts = None
 
@@ -28,6 +29,7 @@ def infer_activities(input_expression, input_network, output_file, params, wildc
     results = {
         "method_class": method_class,
         "method_name": method_name,
+        "query_id": query_id,
         "threshold": threshold,
         "tf_activities": acts.T.to_dict() if acts is not None else None,
     }
