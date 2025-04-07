@@ -31,9 +31,7 @@ def compute_rp(
     method_name = params.get("method_name", None)
 
     gene_loc_set = load_region_set(genome)
-    predictions = load_predictions(
-        input_file, method_class, factor, m2f_path, query_file
-    )
+    predictions = load_predictions(input_file, method_class, factor, m2f_path)
 
     if predictions is not None:
         if score_threshold_q is not None:
@@ -44,6 +42,11 @@ def compute_rp(
             target_genes = {}
         else:
             bed_file = pybedtools.BedTool.from_dataframe(df_predictions)
+            if query_file is not None:
+                # Intersect with query file before extracting features
+                query_bed = pybedtools.BedTool(query_file)
+                bed_file = bed_file.intersect(query_bed, u=True)
+
             df = extract_features(bed_file.fn, gene_loc_set).to_frame()
             df["gene"] = df.index.str.split(":").str[1]
             df = df.groupby("gene").mean()
@@ -75,11 +78,9 @@ def load_predictions(
     method_class,
     factor: str | None = None,
     m2f_path: str | None = None,
-    query_file: str | None = None,
 ) -> pd.DataFrame | None:
     if method_class == "tfsage":
         predictions = pd.read_parquet(predictions_path).assign(score=lambda x: x["sum"])
-        predictions = intersect_with_query(predictions, query_file)
     elif method_class == "motif scan":
         predictions = load_predictions_motif_scan(predictions_path, factor, m2f_path)
     else:
@@ -102,14 +103,6 @@ def load_predictions_motif_scan(
     predictions = ddf.compute()
     predictions.columns = ["chrom", "start", "end", "motif", "score", "strand"]
     return predictions
-
-
-def intersect_with_query(result, query_file):
-    result_bed = pybedtools.BedTool.from_dataframe(result)
-    query_bed = pybedtools.BedTool(query_file)
-    result_bed2 = result_bed.intersect(query_bed, u=True)
-    result2 = result_bed2.to_dataframe(disable_auto_names=True, names=result.columns)
-    return result2
 
 
 compute_rp(
