@@ -17,13 +17,8 @@ include: "rules/tf_activities.smk"
 
 rule all:
     input:
-        # expand(
-        #     config["results_dir"]
-        #     + "generate/all/{threshold}/tfsage_experiments/head_{n}/{query_id}_{factor}.parquet",
-        #     threshold=config["thresholds"],
-        #     n=config["tfsage_n"],
-        #     query_id=query_set,
-        #     factor=factor_list,
-        # ),
-        # config["results_dir"] + "generate/exclude_holdout/benchmark_metrics.csv",
+        expand(
+            config["results_dir"] + "data/{threshold}/distances.parquet",
+            threshold=config["thresholds"],
+        ),
         config["results_dir"] + "tf_activities/results.parquet",

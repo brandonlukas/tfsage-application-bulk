@@ -1,9 +1,3 @@
-import pandas as pd
-
-with open(config["factor_list"]) as f:
-    factor_list = [line.strip() for line in f.readlines()]
-
-
 rule filter_motifs:
     input:
         motif2factors="resources/motif_databases/{motif_db}.motif2factors.txt",

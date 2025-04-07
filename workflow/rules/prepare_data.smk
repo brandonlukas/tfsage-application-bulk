@@ -49,19 +49,18 @@ rule embeddings:
         rp_matrix=config["results_dir"] + "data/{threshold}/rp_matrix/gene.parquet",
         metadata=config["chip_metadata"],
     output:
-        config["results_dir"] + "data/{threshold}/embeddings/{mode}.parquet",
+        config["results_dir"] + "data/{threshold}/embeddings.parquet",
     params:
         align_key="TrackClass",
-        holdout_factors=config["holdout_factors"],
     script:
         "../scripts/prepare_data/embeddings.py"
 
 
 rule distances:
     input:
-        config["results_dir"] + "data/{threshold}/embeddings/{mode}.parquet",
+        config["results_dir"] + "data/{threshold}/embeddings.parquet",
     output:
-        config["results_dir"] + "data/{threshold}/distances/{mode}.parquet",
+        config["results_dir"] + "data/{threshold}/distances.parquet",
     run:
         embeddings = pd.read_parquet(input[0])
         distances = compute_distances(embeddings)

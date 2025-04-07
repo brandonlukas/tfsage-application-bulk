@@ -1,11 +1,11 @@
 rule compute_rp_tfsage:
     input:
         predictions=config["results_dir"]
-        + "generate/{mode}/{threshold}/tfsage_experiments/head_{n}/{query_id}_{factor}.parquet",
+        + "generate/{threshold}/tfsage_experiments/head_{n}/{query_id}_{factor}.parquet",
         # query_file=config["results_dir"] + "downloads/{threshold}/{query_id}.bed",
     output:
         config["results_dir"]
-        + "network/{threshold}/target_genes/tfsage/{mode}/head_{n}/{query_id}_{factor}.json",
+        + "network/{threshold}/target_genes/tfsage/head_{n}/{query_id}_{factor}.json",
     params:
         genome="hg38",
         network_config=config["network"],
@@ -36,13 +36,13 @@ rule aggregate_rp_tfsage:
     input:
         expand(
             config["results_dir"]
-            + "network/{threshold}/target_genes/tfsage/{mode}/head_{n}/{query_id}_{factor}.json",
+            + "network/{threshold}/target_genes/tfsage/head_{n}/{query_id}_{factor}.json",
             factor=factor_list,
             allow_missing=True,
         ),
     output:
         config["results_dir"]
-        + "network/{threshold}/networks/tfsage/{mode}/head_{n}/{query_id}.parquet",
+        + "network/{threshold}/networks/tfsage/head_{n}/{query_id}.parquet",
     script:
         "../scripts/network/aggregate_rp.py"
 

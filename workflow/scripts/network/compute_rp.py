@@ -17,7 +17,6 @@ def compute_rp(
     m2f_path: str | None = None,
     query_file: str | None = None,
 ):
-    mode = wildcards.get("mode", None)
     threshold = wildcards.get("threshold", None)
     query_id = wildcards.get("query_id", None)
     factor = wildcards.get("factor", None)
@@ -58,7 +57,6 @@ def compute_rp(
     results = {
         "method_class": method_class,
         "method_name": method_name,
-        "mode": mode,
         "threshold": threshold,
         "query_id": query_id,
         "factor": factor,
