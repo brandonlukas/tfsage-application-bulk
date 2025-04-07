@@ -12,6 +12,7 @@ include: "rules/prepare_data.smk"
 include: "rules/generate.smk"
 include: "rules/motif_scan.smk"
 include: "rules/network.smk"
+include: "rules/tf_activities.smk"
 
 
 rule all:
@@ -25,18 +26,4 @@ rule all:
         #     factor=factor_list,
         # ),
         # config["results_dir"] + "generate/exclude_holdout/benchmark_metrics.csv",
-        expand(
-            config["results_dir"]
-            + "network/{threshold}/networks/tfsage/{mode}/head_{n}/{query_id}.parquet",
-            threshold=config["thresholds"],
-            n=config["tfsage_n"],
-            query_id=query_set,
-            mode=["all", "exclude_holdout"],
-        ),
-        expand(
-            config["results_dir"]
-            + "network/{threshold}/networks/motif_scan/{motif_db}/{query_id}.parquet",
-            threshold=config["thresholds"],
-            query_id=query_set,
-            motif_db=config["motif_dbs"],
-        ),
+        config["results_dir"] + "tf_activities/results.parquet",

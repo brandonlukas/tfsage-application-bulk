@@ -1,11 +1,12 @@
 import pandas as pd
 import dask.dataframe as dd
 import json
-from tfsage.utils import load_features_bed, closest_features
+import pybedtools
+from tfsage.features import load_region_set, extract_features
 from snakemake.script import snakemake
 
 
-def find_target_genes(
+def compute_rp(
     input_file: str,
     output_file: str,
     params: dict,
@@ -13,8 +14,6 @@ def find_target_genes(
     genome: str = "hg38",
     score_threshold: float = 0,
     score_threshold_q: float | None = None,
-    upstream: int = 1000,
-    downstream: int = 100,
     m2f_path: str | None = None,
 ):
     mode = wildcards.get("mode", None)
@@ -27,12 +26,10 @@ def find_target_genes(
     score_threshold_q = params["network_config"].get(
         "score_threshold_q", score_threshold_q
     )
-    upstream = params["network_config"].get("upstream", upstream)
-    downstream = params["network_config"].get("downstream", downstream)
     method_class = params.get("method_class", None)
     method_name = params.get("method_name", None)
 
-    features_bed = load_features_bed(genome)
+    gene_loc_set = load_region_set(genome)
     predictions = load_predictions(input_file, method_class, factor, m2f_path)
 
     if predictions is not None:
@@ -41,14 +38,15 @@ def find_target_genes(
 
         df_predictions = predictions.query("score >= @score_threshold")
         if df_predictions.empty:
-            target_genes = []
+            target_genes = {}
         else:
-            df = closest_features(df_predictions, features_bed)
-            df = df.query("-@upstream < distance < @downstream")
-            df["gene"] = df["name"].str.split(":").str[1]
-            target_genes = df["gene"].dropna().unique().tolist()
+            bed_file = pybedtools.BedTool.from_dataframe(df_predictions)
+            df = extract_features(bed_file.fn, gene_loc_set).to_frame()
+            df["gene"] = df.index.str.split(":").str[1]
+            df = df.groupby("gene").mean()
+            target_genes = df.to_dict()[0]
     else:
-        target_genes = []
+        target_genes = {}
 
     # Combine everything into one dictionary
     results = {
@@ -60,8 +58,6 @@ def find_target_genes(
         "factor": factor,
         "score_threshold": score_threshold,
         "score_threshold_q": score_threshold_q,
-        "upstream": upstream,
-        "downstream": downstream,
         "genome": genome,
         "target_genes": target_genes,
     }
@@ -103,7 +99,7 @@ def load_predictions_motif_scan(
     return predictions
 
 
-find_target_genes(
+compute_rp(
     snakemake.input["predictions"],
     snakemake.output[0],
     snakemake.params,

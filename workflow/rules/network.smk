@@ -1,4 +1,4 @@
-rule find_target_genes_tfsage:
+rule compute_rp_tfsage:
     input:
         predictions=config["results_dir"]
         + "generate/{mode}/{threshold}/tfsage_experiments/head_{n}/{query_id}_{factor}.parquet",
@@ -11,10 +11,10 @@ rule find_target_genes_tfsage:
         method_class="tfsage",
         method_name=lambda w: f"TFSage-{w.n}",
     script:
-        "../scripts/network/find_target_genes.py"
+        "../scripts/network/compute_rp.py"
 
 
-rule find_target_genes_motif_scan:
+rule compute_rp_motif_scan:
     input:
         predictions=config["results_dir"]
         + "motif_scan/{threshold}/{motif_db}/{query_id}.bed",
@@ -28,10 +28,10 @@ rule find_target_genes_motif_scan:
         method_class="motif scan",
         method_name="{motif_db}",
     script:
-        "../scripts/network/find_target_genes.py"
+        "../scripts/network/compute_rp.py"
 
 
-rule aggregate_target_genes_tfsage:
+rule aggregate_rp_tfsage:
     input:
         expand(
             config["results_dir"]
@@ -43,10 +43,10 @@ rule aggregate_target_genes_tfsage:
         config["results_dir"]
         + "network/{threshold}/networks/tfsage/{mode}/head_{n}/{query_id}.parquet",
     script:
-        "../scripts/network/aggregate_target_genes.py"
+        "../scripts/network/aggregate_rp.py"
 
 
-rule aggregate_target_genes_motif_scan:
+rule aggregate_rp_motif_scan:
     input:
         expand(
             config["results_dir"]
@@ -58,4 +58,4 @@ rule aggregate_target_genes_motif_scan:
         config["results_dir"]
         + "network/{threshold}/networks/motif_scan/{motif_db}/{query_id}.parquet",
     script:
-        "../scripts/network/aggregate_target_genes.py"
+        "../scripts/network/aggregate_rp.py"

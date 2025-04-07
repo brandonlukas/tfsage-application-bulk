@@ -27,7 +27,8 @@ test_sets:
     random_state: 42
 
 network:
-  upstream: 1000
-  downstream: 100
   score_threshold_q: 0.85
   
+curated_dbs:
+  - dorothea
+  - collectri
