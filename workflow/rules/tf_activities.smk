@@ -1,6 +1,6 @@
 rule infer_activities_tfsage:
     input:
-        expression="resources/expression.csv",
+        expression="data/GSE128242_counts.csv",
         network=config["results_dir"]
         + "network/{threshold}/networks/tfsage/head_{n}/{query_id}.parquet",
     output:
@@ -17,7 +17,7 @@ rule infer_activities_tfsage:
 
 rule infer_activities_motif_scan:
     input:
-        expression="resources/expression.csv",
+        expression="data/GSE128242_counts.csv",
         network=config["results_dir"]
         + "network/{threshold}/networks/motif_scan/{motif_db}/{query_id}.parquet",
     output:
@@ -34,7 +34,7 @@ rule infer_activities_motif_scan:
 
 rule infer_activities_curated:
     input:
-        expression="resources/expression.csv",
+        expression="data/GSE128242_counts.csv",
     output:
         config["results_dir"] + "tf_activities/curated/{curated_db}/{query_id}.json",
     params:
