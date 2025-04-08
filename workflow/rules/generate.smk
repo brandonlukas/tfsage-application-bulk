@@ -3,7 +3,7 @@ rule presearch:
         distances=config["results_dir"] + "data/{threshold}/distances.parquet",
         metadata=config["metadata"],
     output:
-        config["results_dir"] + "generate/{threshold}/presearch.parquet",
+        config["results_dir"] + "presearch/{threshold}/results.parquet",
     params:
         query_ids=config["query_ids"],
         n=config["tfsage"]["n"],
@@ -13,7 +13,7 @@ rule presearch:
 
 rule synthesize_experiments:
     input:
-        config["results_dir"] + "generate/{threshold}/presearch.parquet",
+        config["results_dir"] + "presearch/{threshold}/results.parquet",
     output:
         config["results_dir"] + "generate/{threshold}/{query_id}_{factor}.parquet",
     params:
