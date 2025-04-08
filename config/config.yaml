@@ -27,10 +27,14 @@ linkages:
   - cellranger-arc
   - rp-grn
 
-decoupler_networks:
-  - dorothea
-  - collectri
+decoupler:
+  dc_networks:
+    - dorothea
+    - collectri
 
-deseq2_results: "data/GSE128242_deseq2.csv"
+enrichment_analysis:
+  de_res: "data/GSE128242_deseq2.csv"
+  padj_threshold: 0.05
+  log2fc_threshold: 1
 
 thresholds: ["05", "10", "20"]
