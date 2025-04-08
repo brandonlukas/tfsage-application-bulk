@@ -3,6 +3,12 @@ import json
 from snakemake.script import snakemake
 
 
+def aggregate_enrichment(json_files, output_file):
+    df_list = [json_to_dataframe(f) for f in json_files]
+    df = pd.concat(df_list, ignore_index=True)
+    df.to_csv(output_file, index=False)
+
+
 def json_to_dataframe(json_file):
     with open(json_file) as f:
         js = json.load(f)
@@ -19,12 +25,6 @@ def json_to_dataframe(json_file):
         )
     )
     return df
-
-
-def aggregate_enrichment(json_files, output_file):
-    df_list = [json_to_dataframe(f) for f in json_files]
-    df = pd.concat(df_list, ignore_index=True)
-    df.to_csv(output_file, index=False)
 
 
 aggregate_enrichment(snakemake.input, snakemake.output[0])
