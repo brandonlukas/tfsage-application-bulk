@@ -33,4 +33,4 @@ decoupler_networks:
 
 deseq2_results: "data/GSE128242_deseq2.csv"
 
-thresholds: ["10", "20"]
+thresholds: ["05", "10", "20"]

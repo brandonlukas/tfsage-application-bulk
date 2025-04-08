@@ -81,8 +81,8 @@ df = read_file("resources/experimentList.tab")
 # Include relevant H3K27ac and ATAC-seq experiments for Uterus
 condition1 = ((df[2] == "Histone") | (df[2] == "ATAC-Seq")) & (df[4] == "Uterus")
 
-# Include almost all TFs (exclude CTCF and Epitope tags for now)
-condition2 = (df[2] == "TFs and others") & (~df[3].isin(["CTCF", "Epitope tags"]))
+# Include almost all TFs (exclude CTCF and Epitope tags?)
+condition2 = df[2] == "TFs and others"  # & (~df[3].isin(["CTCF", "Epitope tags"]))
 
 # Filter the DataFrame based on the conditions
 df = df[condition1 | condition2]
