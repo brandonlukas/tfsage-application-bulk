@@ -7,7 +7,7 @@ from tfsage.utils import load_features_bed, closest_features
 from snakemake.script import snakemake
 
 
-def compute_rp(
+def find_targets(
     input_file: str,
     output_file: str,
     params: dict,
@@ -18,32 +18,37 @@ def compute_rp(
     m2f_path: str | None = None,
     query_file: str | None = None,
 ):
-    threshold = wildcards.get("threshold", None)
-    query_id = wildcards.get("query_id", None)
-    factor = wildcards.get("factor", None)
+    method_class = params.get("method_class")
+    method_name = params.get("method_name")
+    threshold = wildcards.get("threshold")
+    query_id = wildcards.get("query_id")
+    factor = wildcards.get("factor")
+    linkage_name = wildcards.get("linkage_name")
 
     genome = params.get("genome", genome)
-    score_threshold = params["network_config"].get("score_threshold", score_threshold)
-    score_threshold_q = params["network_config"].get(
+    score_threshold = params["linkage_config"].get("score_threshold", score_threshold)
+    score_threshold_q = params["linkage_config"].get(
         "score_threshold_q", score_threshold_q
     )
-    method_class = params.get("method_class", None)
-    method_name = params.get("method_name", None)
 
-    gene_loc_set = load_region_set(genome)
-    features_bed = load_features_bed(genome)
     predictions = load_predictions(input_file, method_class, factor, m2f_path)
-
     if predictions is not None:
-        if score_threshold_q is not None:
-            score_threshold = predictions["score"].quantile(score_threshold_q)
+        df_predictions = filter_predictions(
+            predictions, score_threshold, score_threshold_q
+        )
 
-        df_predictions = predictions.query("score >= @score_threshold")
         if df_predictions.empty:
             target_genes = {}
         else:
-            # target_genes = rp_target_genes(df_predictions, query_file, gene_loc_set)
-            target_genes = binary_target_genes(df_predictions, query_file, features_bed)
+            if params["linkage_config"].get("intersect_query"):
+                df_predictions = intersect_with_query(df_predictions, query_file)
+
+            if params["linkage_config"].get("use_rp"):
+                gene_loc_set = load_region_set(genome)
+                target_genes = rp_target_genes(df_predictions, gene_loc_set)
+            else:
+                features_bed = load_features_bed(genome)
+                target_genes = binary_target_genes(df_predictions, features_bed)
     else:
         target_genes = {}
 
@@ -54,9 +59,7 @@ def compute_rp(
         "threshold": threshold,
         "query_id": query_id,
         "factor": factor,
-        "score_threshold": score_threshold,
-        "score_threshold_q": score_threshold_q,
-        "genome": genome,
+        "linkage_name": linkage_name,
         "target_genes": target_genes,
     }
 
@@ -97,13 +100,28 @@ def load_predictions_motif_scan(
     return predictions
 
 
-def rp_target_genes(df_predictions, query_file, gene_loc_set):
+def filter_predictions(predictions, score_threshold, score_threshold_q):
+    if score_threshold_q is not None:
+        score_threshold = predictions["score"].quantile(score_threshold_q)
+
+    df_predictions = predictions.query("score >= @score_threshold")
+    return df_predictions
+
+
+def intersect_with_query(df_predictions, query_file):
     bed_file = pybedtools.BedTool.from_dataframe(df_predictions)
     if query_file is not None:
-        # Intersect with query file before extracting features
         query_bed = pybedtools.BedTool(query_file)
-        bed_file = bed_file.intersect(query_bed, u=True).sort()
+        bed_file = bed_file.intersect(query_bed, u=True)
 
+    df_predictions = bed_file.to_dataframe(
+        disable_auto_names=True, names=df_predictions.columns
+    )
+    return df_predictions
+
+
+def rp_target_genes(df_predictions, gene_loc_set):
+    bed_file = pybedtools.BedTool.from_dataframe(df_predictions)
     df = extract_features(bed_file.fn, gene_loc_set).to_frame()
     df["gene"] = df.index.str.split(":").str[1]
     df = df.groupby("gene").mean()
@@ -111,13 +129,8 @@ def rp_target_genes(df_predictions, query_file, gene_loc_set):
     return target_genes
 
 
-def binary_target_genes(df_predictions, query_file, features_bed):
+def binary_target_genes(df_predictions, features_bed):
     bed_file = pybedtools.BedTool.from_dataframe(df_predictions).sort()
-    if query_file is not None:
-        # Intersect with query file before extracting features
-        query_bed = pybedtools.BedTool(query_file)
-        bed_file = bed_file.intersect(query_bed, u=True)
-
     df = closest_features(bed_file, features_bed)
     df = df.query("-1000 < distance < 100")
     df["gene"] = df["name"].str.split(":").str[1]
@@ -125,7 +138,7 @@ def binary_target_genes(df_predictions, query_file, features_bed):
     return target_genes
 
 
-compute_rp(
+find_targets(
     snakemake.input["predictions"],
     snakemake.output[0],
     snakemake.params,

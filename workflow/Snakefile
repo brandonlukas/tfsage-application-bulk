@@ -12,13 +12,8 @@ include: "rules/prepare_data.smk"
 include: "rules/generate.smk"
 include: "rules/motif_scan.smk"
 include: "rules/network.smk"
-include: "rules/tf_activities.smk"
 
 
 rule all:
     input:
-        expand(
-            config["results_dir"] + "data/{threshold}/distances.parquet",
-            threshold=config["thresholds"],
-        ),
-        config["results_dir"] + "tf_activities/results.parquet",
+        config["results_dir"] + "network/enrichment_analysis.csv",

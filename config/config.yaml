@@ -2,7 +2,7 @@ results_dir: "results/"
 chip_metadata: "resources/metadata.csv"
 factor_list: "resources/factor_list.txt"
 query_set: "resources/query_set.txt"
-benchmark_set: "resources/benchmark_set.csv"
+deseq2_report: "data/GSE128242_deseq2_report.csv"
 
 thresholds: ["05", "10", "20"]
 tfsage_n: [15]
@@ -10,7 +10,14 @@ motif_dbs:
   - CIS-BP
 
 network:
-  score_threshold_q: 0.85
+  linkage1:
+    score_threshold: 0
+    intersect_query: true
+    use_rp: false
+  linkage2:
+    score_threshold: 0
+    intersect_query: true
+    use_rp: true
   
 curated_dbs:
   - dorothea
