@@ -30,10 +30,10 @@ def find_targets(
         predictions = predictions.query("score > 0")
         if not predictions.empty:
             predictions = intersect_with_query(predictions, query_file)
-            if params.linkage == "rp-grn":
+            if wildcards.linkage == "rp-grn":
                 gene_loc_set = load_region_set()
                 target_genes = rp_grn_target_genes(predictions, gene_loc_set)
-            elif params.linkage == "cellranger-arc":
+            elif wildcards.linkage == "cellranger-arc":
                 features_bed = load_features_bed()
                 target_genes = cellranger_arc_target_genes(predictions, features_bed)
 
@@ -45,7 +45,7 @@ def find_targets(
         "method_class": params.method_class,
         "method_name": params.method_name,
         "threshold": wildcards.threshold,
-        "linkage_name": wildcards.linkage_name,
+        "linkage": wildcards.linkage,
         "query_id": wildcards.query_id,
         "factor": wildcards.factor,
         "target_genes": target_genes,
