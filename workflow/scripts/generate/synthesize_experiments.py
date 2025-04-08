@@ -12,7 +12,7 @@ def synthesize_experiments(input_file, output_file, params, wildcards):
         .compute()
     )
 
-    bed_files = [params.data_dir + x + ".bed" for x in ranked_list["experiment_id"]]
+    bed_files = [params.data_dir + f"{x}.bed" for x in ranked_list["experiment_id"]]
     weights = ranked_list["score"].tolist()
     result = generate_result(bed_files, weights)
     result.to_parquet(output_file)
