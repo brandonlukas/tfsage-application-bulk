@@ -1,24 +1,36 @@
+downloads_dir: "/home/brandon/data/chip_atlas/"
 results_dir: "results/"
-chip_metadata: "resources/metadata.csv"
-factor_list: "resources/factor_list.txt"
-query_set: "resources/query_set.txt"
-deseq2_report: "data/GSE128242_deseq2_report.csv"
 
-thresholds: ["05", "10", "20"]
-tfsage_n: [15]
-motif_dbs:
-  - CIS-BP
+metadata: "resources/metadata.csv"
+query_ids:
+  - SRX7071213
+  - SRX7071214
+  - SRX7071215
+  - SRX7071216
+  - SRX7071217
+  - SRX7071218
 
-network:
-  linkage1:
-    score_threshold: 0
-    intersect_query: true
-    use_rp: false
-  linkage2:
-    score_threshold: 0
-    intersect_query: true
-    use_rp: true
-  
-curated_dbs:
+motif_scan:
+  motif_dbs:
+    - CIS-BP
+  factors:
+    - JUN
+    - JUNB
+    - JUND
+    - FOS
+    - FOSB
+
+tfsage:
+  n: 15
+
+linkages:
+  - cellranger-arc
+  - rp-grn
+
+decoupler_networks:
   - dorothea
   - collectri
+
+deseq2_results: "data/GSE128242_deseq2.csv"
+
+thresholds: ["10", "20"]

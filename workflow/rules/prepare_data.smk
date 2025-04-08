@@ -5,21 +5,15 @@ from tfsage.search import compute_distances
 
 rule download:
     output:
-        config["results_dir"] + "downloads/{threshold}/{experiment}.bed",
+        config["downloads_dir"] + "{threshold}/{experiment}.bed",
     retries: 5
-    params:
-        genome="hg38",
     run:
-        download_chip_atlas(
-            wildcards.experiment, output[0], wildcards.threshold, params.genome
-        )
+        download_chip_atlas(wildcards.experiment, output[0], wildcards.threshold)
 
 
 def all_experiments(wildcards):
-    experiments = pd.read_csv(config["chip_metadata"])["ID"].tolist()
-    template = (
-        config["results_dir"] + f"downloads/{wildcards.threshold}/{{experiment}}.bed"
-    )
+    experiments = pd.read_csv(config["metadata"])["ID"].tolist()
+    template = config["downloads_dir"] + f"{wildcards.threshold}/{{experiment}}.bed"
     return expand(template, experiment=experiments)
 
 
@@ -47,7 +41,7 @@ rule features_gene:
 rule embeddings:
     input:
         rp_matrix=config["results_dir"] + "data/{threshold}/rp_matrix/gene.parquet",
-        metadata=config["chip_metadata"],
+        metadata=config["metadata"],
     output:
         config["results_dir"] + "data/{threshold}/embeddings.parquet",
     params:

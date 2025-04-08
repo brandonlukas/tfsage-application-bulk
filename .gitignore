@@ -138,8 +138,10 @@ dmypy.json
 
 # Data/downloads
 resources/experimentList.tab
+resources/metadata.csv
 resources/motif_databases/
 results/
+results_backup/
 .snakemake/
 test.py
 upload_box.sh

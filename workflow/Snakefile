@@ -1,16 +1,20 @@
 configfile: "config/config.yaml"
 
 
-with open(config["factor_list"]) as f:
-    factor_list = [line.strip() for line in f.readlines()]
+def get_factor_list():
+    import pandas as pd
 
-with open(config["query_set"]) as f:
-    query_set = [line.strip() for line in f.readlines()]
+    df = pd.read_csv(config["metadata"])
+    factor_list = df.query("TrackClass == 'TFs and others'")["TrackType"].unique()
+    return factor_list
+
+
+factor_list = get_factor_list()
 
 
 include: "rules/prepare_data.smk"
-include: "rules/generate.smk"
 include: "rules/motif_scan.smk"
+include: "rules/generate.smk"
 include: "rules/network.smk"
 
 

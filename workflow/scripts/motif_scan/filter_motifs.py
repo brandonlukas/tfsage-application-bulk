@@ -3,9 +3,9 @@ from tqdm import tqdm
 from snakemake.script import snakemake
 
 
-def filter_motifs(m2f_infile, pfm_infile, m2f_outfile, pfm_outfile, tf_list):
+def filter_motifs(m2f_infile, pfm_infile, m2f_outfile, pfm_outfile, factor_list):
     # Filter motif2factors
-    m2f_filtered = pd.read_csv(m2f_infile, sep="\t").query("Factor in @tf_list")
+    m2f_filtered = pd.read_csv(m2f_infile, sep="\t").query("Factor in @factor_list")
     motif_list = m2f_filtered["Motif"].unique()
 
     # Filter PFM file
@@ -38,5 +38,5 @@ filter_motifs(
     snakemake.input.pfm,
     snakemake.output.motif2factors,
     snakemake.output.pfm,
-    snakemake.params.tf_list,
+    snakemake.params.factor_list,
 )

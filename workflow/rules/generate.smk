@@ -1,11 +1,11 @@
 rule synthesize_experiments:
     input:
         distances=config["results_dir"] + "data/{threshold}/distances.parquet",
-        metadata=config["chip_metadata"],
+        metadata=config["metadata"],
     output:
-        config["results_dir"]
-        + "generate/{threshold}/tfsage_experiments/head_{n}/{query_id}_{factor}.parquet",
+        config["results_dir"] + "generate/{threshold}/{query_id}_{factor}.parquet",
     params:
-        data_dir=lambda w: config["results_dir"] + f"downloads/{w.threshold}/",
+        data_dir=config["downloads_dir"] + "{threshold}/",
+        n=config["tfsage"]["n"],
     script:
         "../scripts/generate/synthesize_experiments.py"

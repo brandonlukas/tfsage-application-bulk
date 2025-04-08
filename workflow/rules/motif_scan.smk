@@ -6,14 +6,14 @@ rule filter_motifs:
         motif2factors="resources/motif_databases_filtered/{motif_db}_filtered.motif2factors.txt",
         pfm="resources/motif_databases_filtered/{motif_db}_filtered.pfm",
     params:
-        tf_list=factor_list,
+        factor_list=config["motif_scan"]["factors"],
     script:
         "../scripts/motif_scan/filter_motifs.py"
 
 
 rule motif_scan:
     input:
-        config["results_dir"] + "downloads/{threshold}/{experiment}.bed",
+        config["downloads_dir"] + "{threshold}/{experiment}.bed",
         pfm="resources/motif_databases_filtered/{motif_db}_filtered.pfm",
     output:
         config["results_dir"] + "motif_scan/{threshold}/{motif_db}/{experiment}.bed",

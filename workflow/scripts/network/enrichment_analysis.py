@@ -7,14 +7,14 @@ from snakemake.script import snakemake
 
 def enrichment_analysis(json_files, output_file, params):
     # --- 1. Load DESeq2 Report ---
-    de_path = params.get("de_path")
+    de_path = params.get("deseq2_results")
     de_df = pd.read_csv(de_path)
 
     # Clean DE table: remove rows with NA in padj
     de_df["is_de"] = (
         (~de_df["padj"].isna())
-        & (de_df["padj"] < 0.05)
-        & (de_df["log2FoldChange"].abs() > 1)
+        & (de_df["padj"] < params.padj_threshold)
+        & (de_df["log2FoldChange"].abs() > params.log2fc_threshold)
     )
 
     # Make gene_name lookup set

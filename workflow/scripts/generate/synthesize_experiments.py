@@ -6,7 +6,7 @@ from snakemake.script import snakemake
 
 
 def synthesize_experiments(
-    distances_file, metadata_file, query_id, factor, top_n, data_dir, output_file
+    distances_file, metadata_file, output_file, params, wildcards
 ):
     # Read distances
     distances_df = pd.read_parquet(distances_file)
@@ -22,17 +22,17 @@ def synthesize_experiments(
     ranked_list = (
         generate_ranked_list(
             distances_df,
-            query_id,
+            wildcards.query_id,
             metadata=metadata,
             scoring_function=scoring_function,
         )
-        .query("TrackType == @factor")
+        .query("TrackType == @wildcards.factor")
         .filter(["score", "TrackType", "CellClass", "CellType"], axis=1)
         .sort_values("score", ascending=False)
-        .head(top_n)
+        .head(params.n)
     )
 
-    bed_files = [data_dir + x + ".bed" for x in ranked_list.index]
+    bed_files = [params.data_dir + x + ".bed" for x in ranked_list.index]
     weights = ranked_list["score"].tolist()
     result = generate_result(bed_files, weights)
     result.to_parquet(output_file)
@@ -51,9 +51,7 @@ def generate_result(bed_files, weights):
 synthesize_experiments(
     snakemake.input.distances,
     snakemake.input.metadata,
-    snakemake.wildcards.query_id,
-    snakemake.wildcards.factor,
-    int(snakemake.wildcards.n),
-    snakemake.params.data_dir,
     snakemake.output[0],
+    snakemake.params,
+    snakemake.wildcards,
 )
