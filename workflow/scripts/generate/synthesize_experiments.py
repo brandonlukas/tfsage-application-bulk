@@ -7,8 +7,8 @@ def synthesize_experiments(input_file, output_file, params, wildcards):
     # Fetch ranked list from presearch data
     ranked_list = (
         dd.read_parquet(input_file)
-        .query("query_id == @wildcards.query_id")
-        .query("TrackType == @wildcards.factor")
+        .query("query_id == @wildcards.query_id", local_dict={"wildcards": wildcards})
+        .query("TrackType == @wildcards.factor", local_dict={"wildcards": wildcards})
         .compute()
     )
 

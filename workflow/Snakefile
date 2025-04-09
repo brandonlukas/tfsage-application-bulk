@@ -2,10 +2,15 @@ configfile: "config/config.yaml"
 
 
 def get_factor_list():
-    import pandas as pd
+    import dask.dataframe as dd
 
-    df = pd.read_csv(config["metadata"])
-    factor_list = df.query("TrackClass == 'TFs and others'")["TrackType"].unique()
+    factor_list = (
+        dd.read_csv(config["metadata"])
+        .query("TrackClass == 'TFs and others'")["TrackType"]
+        .unique()
+        .compute()
+        .tolist()
+    )
     return factor_list
 
 
