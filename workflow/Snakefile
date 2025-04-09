@@ -20,4 +20,4 @@ include: "rules/network.smk"
 
 rule all:
     input:
-        config["results_dir"] + "network/enrichment_analysis.csv",
+        config["results_dir"] + "network/aggregate_enrichment.csv",

@@ -23,7 +23,7 @@ def json_to_net(json_file):
             method_class=js["method_class"],
             method_name=js["method_name"],
             threshold=js["threshold"],
-            linkage_name=js["linkage_name"],
+            linkage=js["linkage"],
             query_id=js["query_id"],
             source=js["factor"],
         )
