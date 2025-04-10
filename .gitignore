@@ -137,6 +137,7 @@ dmypy.json
 .DS_Store
 
 # Data/downloads
+data/
 resources/experimentList.tab
 resources/metadata.csv
 resources/motif_databases/
